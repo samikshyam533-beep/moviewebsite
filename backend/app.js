@@ -2,9 +2,13 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import movieRoute from "./routes/movieRoute.js";
+import authRoute from "./routes/authRoute.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 const app = express();
+app.use(express.json());
+app.use(cookieParser());
 
 // app.listen(process.env.PORT, () => {
 //   console.log("server is running on port", process.env.PORT);
@@ -18,6 +22,7 @@ const app = express();
 // });
 
 app.use("/api/movie", movieRoute);
+app.use("/api/auth", authRoute);
 
 mongoose
   .connect(process.env.MONGO_URI)
