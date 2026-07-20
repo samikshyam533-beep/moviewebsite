@@ -1,13 +1,32 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { apiRequest } from "../services/api";
+import { AuthContext } from "../context/AuthContext";
 
 const SignIn = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  const handleSubmit = (e) => {
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { updateUser } = useContext(AuthContext);
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ username, password });
+    setIsLoading(true);
+    setError("");
+    try {
+      const res = await apiRequest.post("/auth/login", {
+        username,
+        password,
+      });
+      updateUser(res.data);
+      navigate("/");
+    } catch (error) {
+      setError(error.response?.data?.message || "Something went wrong");
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -19,8 +38,12 @@ const SignIn = () => {
         <p className="text-center text-gray-500 mt-2 mb-8">
           Sign in to your account
         </p>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
+        {error && (
+          <div className="bg-red-600 text-white p-3 rounded mb-4 text-center">
+            {error}
+          </div>
+        )}
+        <form className="space-y-5" onSubmit={handleSubmit}>
           {/* Username */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -28,9 +51,10 @@ const SignIn = () => {
             </label>
             <input
               type="text"
-              placeholder="Enter your username"
+              id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
@@ -43,9 +67,10 @@ const SignIn = () => {
             </label>
             <input
               type="password"
-              placeholder="Enter your password"
+              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
@@ -62,7 +87,7 @@ const SignIn = () => {
             </label>
 
             <Link
-              type="Link"
+              to="/forgot-password"
               className="text-blue-600 hover:text-blue-700 hover:underline"
             >
               Forgot password?
@@ -70,18 +95,21 @@ const SignIn = () => {
           </div>
 
           {/* Sign In Button */}
-          <Link
+          <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300"
+            disabled={isLoading}
+            className={`w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded font-medium transition-colors ${
+              isLoading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            Sign In
-          </Link>
+            {isLoading ? "Logging In..." : "Log In"}
+          </button>
         </form>
 
         <p className="text-center text-gray-500 text-sm mt-6">
           Don't have an account?{" "}
           <Link
-            type="Link"
+            to="/signup"
             className="text-blue-600 font-medium hover:underline"
           >
             Sign Up

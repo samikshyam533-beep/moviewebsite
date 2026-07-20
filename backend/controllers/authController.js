@@ -32,7 +32,7 @@ export const registerUser = async (req, res) => {
       .status(201)
       .json({ message: "user registered successfully", data: userResponse });
   } catch (error) {
-    res.status(500).json({ meesage: "internal server error" });
+    res.status(500).json({ message: "internal server error" });
     console.error(error);
   }
 };

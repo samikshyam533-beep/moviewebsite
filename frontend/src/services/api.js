@@ -1,5 +1,8 @@
+import axios from "axios";
+
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
+
 export const getPopularMovies = async () => {
   const response = await fetch(
     `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`,
@@ -65,3 +68,8 @@ export const getMovieDetails = async (movieId) => {
   const data = await response.json();
   return data;
 };
+
+export const apiRequest = axios.create({
+  baseURL: "http://localhost:4000/api",
+  withCredentials: true,
+});

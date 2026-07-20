@@ -4,12 +4,18 @@ import mongoose from "mongoose";
 import movieRoute from "./routes/movieRoute.js";
 import authRoute from "./routes/authRoute.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 // app.listen(process.env.PORT, () => {
 //   console.log("server is running on port", process.env.PORT);
 // });
